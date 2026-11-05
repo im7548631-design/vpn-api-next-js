@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { vpnDb } from '../../../lib/vpnStore';
+import { vpnDb } from "@/lib/vpnStore";
 
 export async function GET() {
   const current = vpnDb.currentConnection;
