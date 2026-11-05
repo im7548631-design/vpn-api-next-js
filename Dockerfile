@@ -9,7 +9,6 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Ensure public directory exists so the build never fails if it's missing
 RUN mkdir -p public
 ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build
@@ -29,7 +28,6 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/server.js ./server.js
 
 USER nextjs
 
