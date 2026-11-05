@@ -2,7 +2,8 @@
 FROM node:18-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm ci
+# Use npm install instead of npm ci so it generates package-lock.json if missing
+RUN npm install
 
 # Stage 2: Build application
 FROM node:18-alpine AS builder
@@ -24,12 +25,9 @@ ENV HOSTNAME "0.0.0.0"
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy standalone build files and assets
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-# Ensure custom server.js is present in production workspace
 COPY --from=builder --chown=nextjs:nodejs /app/server.js ./server.js
 
 USER nextjs
